@@ -1,0 +1,56 @@
+version: '3'
+
+services:
+    fpm:
+        container_name: tasolar_fpm
+        build:
+            context: ./docker/php
+            dockerfile: Dockerfile
+            args:
+                - DEBUG_PORT=9181
+        environment:
+            - PHP_IDE_CONFIG=serverName=tasolar
+            - XDEBUG_CONFIG=idekey=PHPSTORM
+        restart: 'no'
+        tty: true
+        depends_on:
+            - db
+        working_dir: /app
+        volumes:
+            - ./src:/app
+        networks:
+            - tasolar
+    nginx:
+        container_name: tasolar_nginx
+        build:
+            context: ./docker/nginx
+            dockerfile: Dockerfile
+        restart: 'no'
+        tty: true
+        volumes:
+            - ./docker/nginx/conf/conf.d:/etc/nginx/conf.d
+            - ./src:/app
+        ports:
+            - "9080:80"
+        networks:
+            - tasolar
+    db:
+        image: postgres:16.0
+        container_name: tasolar_db
+        environment:
+            POSTGRES_DB: ${POSTGRES_DB:-app}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
+            POSTGRES_USER: ${POSTGRES_USER:-symfony}
+        volumes:
+            - db-data:/var/lib/postgresql/data:rw
+        ports:
+            - "10432:5432"
+        networks:
+            - tasolar
+volumes:
+    db-data:
+        driver: local
+
+networks:
+    tasolar:
+        driver: bridge
