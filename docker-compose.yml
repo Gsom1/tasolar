@@ -17,7 +17,7 @@ services:
             - db
         working_dir: /app
         volumes:
-            - ./src:/app
+            - ./app:/app
         networks:
             - tasolar
     nginx:
