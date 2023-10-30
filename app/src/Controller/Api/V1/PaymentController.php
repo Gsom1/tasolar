@@ -3,6 +3,10 @@
 namespace App\Controller\Api\V1;
 
 use App\Dto\NewPaymentDto;
+use App\UserRequests\NewPaymentRequest;
+use App\PaymentProcessor\PaymentProcessor;
+use Money\Currency;
+use Money\Money;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,11 +19,17 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class PaymentController extends AbstractController
 {
     #[Route('/payments', name: 'new_payment', methods: ['POST'])]
-    public function index(Request $request, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
+    public function index(
+        Request             $request,
+        SerializerInterface $serializer,
+        ValidatorInterface  $validator,
+        PaymentProcessor    $processor
+    ): JsonResponse
     {
         $data = $request->getContent();
-        $paymentDetails = $serializer->deserialize($data, NewPaymentDto::class, 'json');
-        $errors = $validator->validate($paymentDetails);
+        /** @var NewPaymentRequest $paymentRequest */
+        $paymentRequest = $serializer->deserialize($data, NewPaymentRequest::class, 'json');
+        $errors = $validator->validate($paymentRequest);
 
         if (count($errors) > 0) {
             $errorResponses = [];
@@ -31,6 +41,14 @@ class PaymentController extends AbstractController
                 Response::HTTP_BAD_REQUEST,
             );
         }
+
+        $processor->process(new NewPaymentDto(
+            merchantId: $paymentRequest->merchantId,
+            cardNumber: $paymentRequest->cardNumber,
+            expiryDate: $paymentRequest->expiryDate,
+            cvv: $paymentRequest->cvv,
+            amount: new Money($paymentRequest->amount, new Currency($paymentRequest->currency))
+        ));
 
         return new JsonResponse('ok', Response::HTTP_OK);
     }

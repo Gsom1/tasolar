@@ -2,28 +2,17 @@
 
 namespace App\Dto;
 
-use Symfony\Component\Validator\Constraints as Assert;
+use Money\Money;
 
 class NewPaymentDto
 {
-    #[Assert\NotBlank]
-    #[Assert\Luhn]
-    public string $cardNumber;
-
-    #[Assert\NotBlank]
-    #[Assert\Date]
-    public string $expiryDate;
-
-    #[Assert\NotBlank]
-    #[Assert\Range(min: 100, max: 999)]
-    public int $cvv;
-
-    #[Assert\NotBlank]
-    public float $amount;
-
-    #[Assert\NotBlank]
-    public string $currency;
-
-    #[Assert\NotBlank]
-    public string $merchantId;
+    public function __construct(
+        public readonly string $merchantId,
+        public readonly string $cardNumber,
+        public readonly string $expiryDate,
+        public readonly int    $cvv,
+        public readonly Money  $amount,
+    )
+    {
+    }
 }

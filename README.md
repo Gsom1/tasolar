@@ -7,3 +7,8 @@ Create database
 
 Apply migrations
 ```php bin/console doctrine:migrations:migrate```
+
+
+## todo
+- input validation is not final
+- money formatter
