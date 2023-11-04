@@ -35,6 +35,9 @@ class PaymentTransaction
     #[ORM\Column(length: 255)]
     private ?string $merchant_id = null;
 
+    #[ORM\OneToOne(mappedBy: 'transaction', cascade: ['persist', 'remove'])]
+    private ?CreditCardTransactionParameters $creditCardTransactionParameters = null;
+
     public function getId(): ?Uuid
     {
         return $this->id;
@@ -104,6 +107,28 @@ class PaymentTransaction
     public function setMerchantId(string $merchant_id): static
     {
         $this->merchant_id = $merchant_id;
+
+        return $this;
+    }
+
+    public function getCreditCardTransactionParameters(): ?CreditCardTransactionParameters
+    {
+        return $this->creditCardTransactionParameters;
+    }
+
+    public function setCreditCardTransactionParameters(?CreditCardTransactionParameters $creditCardTransactionParameters): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($creditCardTransactionParameters === null && $this->creditCardTransactionParameters !== null) {
+            $this->creditCardTransactionParameters->setTransaction(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($creditCardTransactionParameters !== null && $creditCardTransactionParameters->getTransaction() !== $this) {
+            $creditCardTransactionParameters->setTransaction($this);
+        }
+
+        $this->creditCardTransactionParameters = $creditCardTransactionParameters;
 
         return $this;
     }
