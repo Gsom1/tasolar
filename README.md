@@ -8,6 +8,3 @@ Create database
 Apply migrations
 ```php bin/console doctrine:migrations:migrate```
 
-
-## todo
-- money formatter

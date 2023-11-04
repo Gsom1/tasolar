@@ -23,7 +23,7 @@ class PaymentTransaction
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $id;
 
-    #[ORM\Column()]
+    #[ORM\Column(type: "bigint")]
     private ?int $amount = null;
 
     #[ORM\Column(length: 8)]

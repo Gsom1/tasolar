@@ -3,10 +3,9 @@
 namespace App\Controller\Api\V1;
 
 use App\Dto\NewPaymentDto;
+use App\Money\MoneyFactory;
 use App\UserRequests\NewPaymentRequest;
 use App\PaymentProcessor\PaymentProcessor;
-use Money\Currency;
-use Money\Money;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,9 +22,9 @@ class PaymentController extends AbstractController
         Request             $request,
         SerializerInterface $serializer,
         ValidatorInterface  $validator,
-        PaymentProcessor    $processor
-    ): JsonResponse
-    {
+        PaymentProcessor    $processor,
+        MoneyFactory        $moneyFactory,
+    ): JsonResponse {
         $data = $request->getContent();
         /** @var NewPaymentRequest $paymentRequest */
         $paymentRequest = $serializer->deserialize($data, NewPaymentRequest::class, 'json');
@@ -42,13 +41,15 @@ class PaymentController extends AbstractController
             );
         }
 
-        $processor->process(new NewPaymentDto(
-            merchantId: $paymentRequest->merchantId,
-            cardNumber: $paymentRequest->cardNumber,
-            expiryDate: $paymentRequest->expiryDate,
-            cvv: $paymentRequest->cvv,
-            amount: new Money($paymentRequest->amount, new Currency($paymentRequest->currency))
-        ));
+        $processor->process(
+            new NewPaymentDto(
+                merchantId: $paymentRequest->merchantId,
+                cardNumber: $paymentRequest->cardNumber,
+                expiryDate: $paymentRequest->expiryDate,
+                cvv       : $paymentRequest->cvv,
+                amount    : $moneyFactory->create($paymentRequest->amount, $paymentRequest->currency),
+            )
+        );
 
         return new JsonResponse('ok', Response::HTTP_OK);
     }
