@@ -3,6 +3,7 @@
 namespace App\UserRequests;
 
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Validation as CustomAssert;
 
 class NewPaymentRequest
 {
@@ -10,8 +11,11 @@ class NewPaymentRequest
     #[Assert\Luhn]
     public string $cardNumber;
 
-    #[Assert\NotBlank]
-//    #[Assert\Date]
+    #[Assert\Sequentially([
+        new Assert\NotBlank(),
+        new Assert\Regex('~(0[1-9]|1[0-2])/?([0-9]{4}|[0-9]{2})$~'),
+        new CustomAssert\CardExpiryDate(),
+    ])]
     public string $expiryDate;
 
     #[Assert\NotBlank]
