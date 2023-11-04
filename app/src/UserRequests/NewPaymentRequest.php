@@ -23,9 +23,11 @@ class NewPaymentRequest
     public int $cvv;
 
     #[Assert\NotBlank]
+    #[Assert\Type(type: 'float')]
     public float $amount;
 
     #[Assert\NotBlank]
+    #[Assert\Currency]
     public string $currency;
 
     #[Assert\NotBlank]

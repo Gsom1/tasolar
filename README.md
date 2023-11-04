@@ -10,5 +10,4 @@ Apply migrations
 
 
 ## todo
-- input validation is not final
 - money formatter
