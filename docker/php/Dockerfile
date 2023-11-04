@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
 	net-tools \
 	iputils-ping
 
-RUN docker-php-ext-install gmp intl opcache bcmath pcntl
+RUN docker-php-ext-install gmp intl bcmath pcntl opcache
 
 # Install Postgre PDO
 RUN apt-get install -y libpq-dev \
