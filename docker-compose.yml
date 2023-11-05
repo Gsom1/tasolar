@@ -47,6 +47,14 @@ services:
             - "10432:5432"
         networks:
             - tasolar
+
+    redis:
+        image: "redis:alpine"
+        container_name: tasolar_redis
+        ports:
+            - "10329:6379"
+        networks:
+            - tasolar
 volumes:
     db-data:
         driver: local

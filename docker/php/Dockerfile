@@ -18,9 +18,12 @@ RUN apt-get update && apt-get install -y \
     libicu-dev \
 	mc \
 	net-tools \
-	iputils-ping
+	iputils-ping \
+    libpq-dev
 
 RUN docker-php-ext-install gmp intl bcmath pcntl opcache
+
+RUN pecl install redis && docker-php-ext-enable redis
 
 # Install Postgre PDO
 RUN apt-get install -y libpq-dev \
