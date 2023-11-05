@@ -1,0 +1,13 @@
+framework:
+  messenger:
+    transports:
+      new_transactions: "%env(MESSENGER_TRANSPORT_DSN)%"
+      psp1: "%env(MESSENGER_TRANSPORT_DSN)%"
+      psp2: "%env(MESSENGER_TRANSPORT_DSN)%"
+      psp3: "%env(MESSENGER_TRANSPORT_DSN)%"
+
+    routing:
+      App\Message\NewPaymentTransactionMessage: new_transactions
+      App\Message\Psp1PaymentMessage: psp1
+      App\Message\Psp2PaymentMessage: psp2
+      App\Message\Psp3PaymentMessage: psp3

@@ -63,30 +63,6 @@ class PaymentTransaction
         return new Money($this->amount, new Currency($this->currency));
     }
 
-//    public function getAmount(): ?string
-//    {
-//        return $this->amount;
-//    }
-//
-//    public function setAmount(string $amount): static
-//    {
-//        $this->amount = $amount;
-//
-//        return $this;
-//    }
-//
-//    public function getCurrency(): ?string
-//    {
-//        return $this->currency;
-//    }
-//
-//    public function setCurrency(string $currency): static
-//    {
-//        $this->currency = $currency;
-//
-//        return $this;
-//    }
-
     public function getStatus(): ?PaymentTransactionStatus
     {
         return $this->status;
