@@ -21,11 +21,20 @@ class AbstractPsp implements PaymentProviderInterface
         $this->logger->debug(__METHOD__, [$transaction]);
 
         $response = $this->client->request('POST', static::BASE_URL . '/payments', [
-            'card_number' => $transaction->getCreditCardTransactionParameters()->getCardNumber(),
+            'headers' => [
+                'Accept' => 'application/json',
+            ],
+            'body'    => '{
+                "cardNumber": "4355068868972142",
+                "amount": 123,
+                "currency": "RUB",
+                "merchantId": "1"
+            }',
         ]);
 
         $approved = false;
-        if ($response->getContent() === 'Approved') {
+        $data = json_decode($response->getContent());
+        if ($data === 'Approved') {
             $approved = true;
         }
 

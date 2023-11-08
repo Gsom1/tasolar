@@ -4,11 +4,8 @@ namespace App\PspRouter;
 
 use App\Entity\PaymentTransaction;
 use App\Psp\PaymentProviderInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
+use App\Psp\PspResponse;
 
-/**
- * @TODO in case when run multiple workers, keep $pspProcessedAmount in Redis
- */
 class PspMonetaryRouter implements PspRouterInterface
 {
     private array $pspProcessedAmount;
@@ -19,11 +16,10 @@ class PspMonetaryRouter implements PspRouterInterface
     private array $psp;
 
     public function __construct(
-        private readonly MessageBusInterface $bus,
     ) {
     }
 
-    public function route(PaymentTransaction $transaction)
+    public function route(PaymentTransaction $transaction): PspResponse
     {
         if (count($this->psp) < 1) {
             throw new \Exception('NoPaymentProviders');
@@ -31,11 +27,10 @@ class PspMonetaryRouter implements PspRouterInterface
 
         $providerKey = $this->getProviderKey();
         $psp = $this->psp[$providerKey];
-        $messageClass = $psp->getMessageClassName();
         $transactionAmount = (int)$transaction->getCost()->getAmount();
         $this->pspProcessedAmount[$providerKey] += $transactionAmount;
 
-        $this->bus->dispatch(new $messageClass($transaction->getId()));
+        return $psp->payment($transaction);
     }
 
     private function getProviderKey(): int

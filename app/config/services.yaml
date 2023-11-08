@@ -6,7 +6,6 @@
 parameters:
 
 imports:
-    - { resource: ./packages/messenger.yaml }
 
 services:
     # default configuration for services in *this* file

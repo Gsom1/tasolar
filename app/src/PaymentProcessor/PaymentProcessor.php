@@ -5,35 +5,28 @@ namespace App\PaymentProcessor;
 use App\Dto\NewPaymentDto;
 use App\Entity\CreditCardTransactionParameters;
 use App\Entity\PaymentTransaction;
-use App\Message\NewPaymentTransactionMessage;
-use App\PaymentProcessor\Exceptions\DeclinedException;
 use App\PaymentTransaction\CardType;
 use App\PaymentTransaction\PaymentTransactionStatus;
-use App\Services\ApproveService\ApproveService;
+use App\Psp\PspResponse;
+use App\PspRouter\PspResolver;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
 class PaymentProcessor
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private readonly ApproveService         $approveService,
-        private readonly MessageBusInterface    $bus,
+        private readonly PspResolver            $pspResolver,
     ) {
     }
 
-    public function process(NewPaymentDto $dto): void
+    public function process(NewPaymentDto $dto): PspResponse
     {
         $paymentTransaction = new PaymentTransaction();
         $paymentTransaction->setId(Uuid::v4());
+        $paymentTransaction->setStatus(PaymentTransactionStatus::CREATED);
         $paymentTransaction->setMerchantId($dto->merchantId);
         $paymentTransaction->setCost($dto->amount);
-
-        $this->approveService->approve($dto, $paymentTransaction);
-        if ($paymentTransaction->getStatus() === PaymentTransactionStatus::DECLINED) {
-            throw new DeclinedException();
-        }
 
         $ccParams = new CreditCardTransactionParameters();
         $ccParams->setCardNumber($dto->cardNumber);
@@ -41,12 +34,23 @@ class PaymentProcessor
         $ccParams->setExpiry($dto->expiryDate);
         $ccParams->setTransaction($paymentTransaction);
         $ccParams->setType($this->getCardType($dto->cardNumber));
+        $paymentTransaction->setCreditCardTransactionParameters($ccParams);
 
         $this->em->persist($paymentTransaction);
         $this->em->persist($ccParams);
+
+        $router = $this->pspResolver->getRouter($paymentTransaction);
+        $pspResponse = $router->route($paymentTransaction);
+        if ($pspResponse->isApproved()) {
+            $paymentTransaction->setStatus(PaymentTransactionStatus::APPROVED);
+        } else {
+            $paymentTransaction->setStatus(PaymentTransactionStatus::DECLINED);
+        }
+
+        $this->em->persist($paymentTransaction);
         $this->em->flush();
 
-        $this->bus->dispatch(new NewPaymentTransactionMessage($paymentTransaction->getId()));
+        return $pspResponse;
     }
 
     public function getCardType(string $cardNumber): CardType

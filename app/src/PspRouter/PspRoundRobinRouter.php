@@ -4,7 +4,7 @@ namespace App\PspRouter;
 
 use App\Entity\PaymentTransaction;
 use App\Psp\PaymentProviderInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
+use App\Psp\PspResponse;
 
 class PspRoundRobinRouter implements PspRouterInterface
 {
@@ -17,20 +17,19 @@ class PspRoundRobinRouter implements PspRouterInterface
     private array $psp;
 
     public function __construct(
-        private readonly MessageBusInterface $bus,
     ) {
 
     }
 
-    public function route(PaymentTransaction $transaction)
+    public function route(PaymentTransaction $transaction): PspResponse
     {
         if (count($this->psp) < 1) {
             throw new \Exception('NoPaymentProviders');
         }
 
         $psp = $this->getProvider();
-        $messageClass = $psp->getMessageClassName();
-        $this->bus->dispatch(new $messageClass($transaction->getId()));
+
+        return $psp->payment($transaction);
     }
 
     private function getProvider(): PaymentProviderInterface

@@ -2,9 +2,9 @@
 
 namespace App\Psp;
 
+use App\Entity\PaymentTransaction;
+
 interface PaymentProviderInterface
 {
-    public function getName(): string;
-
-    public function getMessageClassName(): string;
+    public function payment(PaymentTransaction $transaction): PspResponse;
 }
