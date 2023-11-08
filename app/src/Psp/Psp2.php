@@ -2,17 +2,7 @@
 
 namespace App\Psp;
 
-use App\Message\Psp2PaymentMessage;
-
-class Psp2 implements PaymentProviderInterface
+class Psp2 extends AbstractPsp
 {
-    public function getName(): string
-    {
-        return 'psp2';
-    }
-
-    public function getMessageClassName(): string
-    {
-        return Psp2PaymentMessage::class;
-    }
+    protected const BASE_URL = 'http://psp2';
 }
