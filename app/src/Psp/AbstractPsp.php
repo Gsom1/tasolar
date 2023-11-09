@@ -3,6 +3,7 @@
 namespace App\Psp;
 
 use App\Entity\PaymentTransaction;
+use App\Money\MoneyFormatter;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -20,16 +21,18 @@ class AbstractPsp implements PaymentProviderInterface
     {
         $this->logger->debug(__METHOD__, [$transaction]);
 
+        $params = $transaction->getCreditCardTransactionParameters();
+
         $response = $this->client->request('POST', static::BASE_URL . '/payments', [
             'headers' => [
-                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
             ],
-            'body'    => '{
-                "cardNumber": "4355068868972142",
-                "amount": 123,
-                "currency": "RUB",
-                "merchantId": "1"
-            }',
+            'body'    => json_encode([
+                "cardNumber" => $params->getCardNumber(),
+                "amount"     => (float)MoneyFormatter::getAmount($transaction->getCost()),
+                "currency"   => $transaction->getCost()->getCurrency()->getCode(),
+                "merchantId" => $transaction->getMerchantId(),
+            ]),
         ]);
 
         $approved = false;
