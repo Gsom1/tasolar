@@ -2,12 +2,8 @@
 
 namespace App\MessageHandler;
 
-use App\Entity\CardBalance;
 use App\Message\NewPaymentTransactionMessage;
-use App\Money\MoneyFactory;
-use App\PaymentTransaction\PaymentTransactionStatus;
 use App\PaymentTransaction\SettleProcess;
-use App\Repository\CardBalanceRepository;
 use App\Repository\PaymentTransactionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
