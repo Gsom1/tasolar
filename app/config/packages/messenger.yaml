@@ -1,0 +1,7 @@
+framework:
+  messenger:
+    transports:
+      new_transactions: "%env(MESSENGER_TRANSPORT_DSN)%"
+
+    routing:
+      App\Message\NewPaymentTransactionMessage: new_transactions

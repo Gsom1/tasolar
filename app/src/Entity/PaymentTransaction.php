@@ -17,6 +17,8 @@ class PaymentTransaction
 {
     use TimestampsTrait;
 
+    public const FIELD_STATUS = 'status';
+
     #[ORM\Id]
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]

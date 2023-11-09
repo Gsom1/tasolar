@@ -5,11 +5,13 @@ namespace App\PaymentProcessor;
 use App\Dto\NewPaymentDto;
 use App\Entity\CreditCardTransactionParameters;
 use App\Entity\PaymentTransaction;
+use App\Message\NewPaymentTransactionMessage;
 use App\PaymentTransaction\CardType;
 use App\PaymentTransaction\PaymentTransactionStatus;
 use App\Psp\PspResponse;
 use App\PspRouter\PspResolver;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
 class PaymentProcessor
@@ -17,6 +19,7 @@ class PaymentProcessor
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly PspResolver            $pspResolver,
+        private readonly MessageBusInterface    $bus,
     ) {
     }
 
@@ -49,6 +52,8 @@ class PaymentProcessor
 
         $this->em->persist($paymentTransaction);
         $this->em->flush();
+
+        $this->bus->dispatch(new NewPaymentTransactionMessage($paymentTransaction->getId()));
 
         return $pspResponse;
     }
