@@ -50,14 +50,19 @@ class TransactionsSettleBulkCommand extends Command
         $transactions = $this->transactionRepository
             ->findBy(
                 criteria: [
-                              PaymentTransaction::FIELD_STATUS => PaymentTransactionStatus::APPROVED,
+                              PaymentTransaction::FIELD_STATUS => PaymentTransactionStatus::APPROVED->value,
                           ],
                 limit   : $size
             )
         ;
 
         foreach ($transactions as $transaction) {
-            $this->settleProcess->settle($transaction);
+            $io->info('Transaction ' . $transaction->getId());
+            try {
+                $this->settleProcess->settle($transaction);
+            } catch (\Throwable $e) {
+                $io->error($e->getMessage());
+            }
         }
 
         //Commit the bulk changes to DB

@@ -21,7 +21,11 @@ class CardTypeType extends Type
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        return $value ? $value->value : null;
+        if ($value instanceof CardType) {
+            return $value->value;
+        }
+
+        return $value;
     }
 
     public function getName(): string

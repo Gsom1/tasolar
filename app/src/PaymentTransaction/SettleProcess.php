@@ -25,7 +25,7 @@ class SettleProcess
     public function settle(PaymentTransaction $transaction): void
     {
         $transactionParams = $transaction->getCreditCardTransactionParameters();
-        $cardBalance = $this->cardBalanceRepository->findBy(
+        $cardBalance = $this->cardBalanceRepository->findOneBy(
             [
                 CardBalance::FIELD_CARD_NUMBER => $transactionParams->getCardNumber(),
             ]

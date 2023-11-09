@@ -21,7 +21,11 @@ class TransactionStatusType extends Type
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?int
     {
-        return $value ? $value->value : null;
+        if ($value instanceof PaymentTransactionStatus) {
+            return $value->value;
+        }
+
+        return $value;
     }
 
     public function getName(): string
