@@ -60,8 +60,8 @@ There are 3 providers: psp1, psp2, psp3
 - I use redis for messages, it should be either redis with persistence or other queue like rabbitmq.
 - Routing (see PspResolver) is done in very simple form in real project with 100 rules it should be DB or YAML easy-manageable config and parser.
 
-### Concurency
-Concurency and multithreading at endpoint level provided by fpm, it runs every request in separate thread.
+### Concurrency
+Concurrency and multithreading at endpoint level provided by fpm, it runs every request in separate thread.
 
 ### End of day settlement
 I did 2 implementations for end of day settlement.
