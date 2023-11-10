@@ -73,7 +73,7 @@ In current implementation only one instance of such command should work, if we n
 - need to crate shared lock for every card number in a bulk, or change transactions isolation level to read uncommitted.
 To run the command use:
 ```
-php bin/console transactions:settle_bulk
+php bin/console transactions:settle_bulk 3
 ```
 
 3. Message consumer. See NewTransactionMessageHandler
