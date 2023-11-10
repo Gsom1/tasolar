@@ -84,3 +84,5 @@ php bin/console messenger:consume new_transactions
 ```
 it processes transactions one by one but in many threads concurrently, there is a shared lock for card number as well in case different consumer get transaction for the same card.
 
+## Unit tests
+Coming ...
