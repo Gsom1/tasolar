@@ -56,6 +56,15 @@ There are 3 providers: psp1, psp2, psp3
 
 **Note:** Any currency can be submitted, but it is recommended to use USD as other currencies may fail during the end-of-day settlement. To generate test cards, visit [DNSChecker Credit Card Generator](https://dnschecker.org/credit-card-generator.php).
 
+Some cards:  
+VISA  
+4245208063498857  
+4587327248867814
+
+MC  
+5481834647055531  
+5481832318764704
+
 ## The Exercise
 - I use redis for messages, it should be either redis with persistence or other queue like rabbitmq.
 - Routing (see PspResolver) is done in very simple form in real project with 100 rules it should be DB or YAML easy-manageable config and parser.
