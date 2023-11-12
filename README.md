@@ -100,3 +100,7 @@ To run them use:
 ```
 php bin/phpunit
 ```
+
+For integration test separate DB is created everytime, every test is running in a DB transaction
+which rollbacks by the end of the test
+so you'll not find any records in test DB

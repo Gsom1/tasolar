@@ -13,3 +13,27 @@ if (file_exists(dirname(__DIR__).'/config/bootstrap.php')) {
 if ($_SERVER['APP_DEBUG']) {
     umask(0000);
 }
+
+passthru(
+    sprintf(
+        'APP_ENV=%s php "%s/../bin/console" doctrine:schema:drop --full-database --force',
+        $_ENV['APP_ENV'],
+        __DIR__
+    )
+);
+
+passthru(
+    sprintf(
+        'APP_ENV=%s php "%s/../bin/console" doctrine:database:create',
+        $_ENV['APP_ENV'],
+        __DIR__
+    )
+);
+
+passthru(
+    sprintf(
+        'APP_ENV=%s php "%s/../bin/console" doctrine:schema:create',
+        $_ENV['APP_ENV'],
+        __DIR__
+    )
+);

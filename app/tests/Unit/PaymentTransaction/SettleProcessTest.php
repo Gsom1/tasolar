@@ -39,6 +39,13 @@ class SettleProcessTest extends KernelTestCase
         $this->lockFactory = $this->createMock(LockFactory::class);
         $this->lock = $this->createMock(LockInterface::class);
         $this->lockFactory->method('createLock')->willReturn($this->lock);
+        self::bootKernel();
+        $container = static::getContainer();
+        $this->moneyFactory = $container->get(MoneyFactory::class);
+
+        $this->cardBalance = new CardBalance();
+        $this->cardBalance->setBalance($this->moneyFactory->create(self::CARD_BALANCE, new Currency('USD')));
+        $this->cardBalanceRepository->method('findOneBy')->willReturn($this->cardBalance);
 
         $this->settleProcess = new SettleProcess(
             $this->cardBalanceRepository,
@@ -53,14 +60,6 @@ class SettleProcessTest extends KernelTestCase
         $this->transaction = new PaymentTransaction();
         $this->transaction->setCreditCardTransactionParameters($params);
         $params->setTransaction($this->transaction);
-
-        self::bootKernel();
-        $container = static::getContainer();
-        $this->moneyFactory = $container->get(MoneyFactory::class);
-
-        $this->cardBalance = new CardBalance();
-        $this->cardBalance->setBalance($this->moneyFactory->create(self::CARD_BALANCE, new Currency('USD')));
-        $this->cardBalanceRepository->method('findOneBy')->willReturn($this->cardBalance);
     }
 
     public function testSettle(): void

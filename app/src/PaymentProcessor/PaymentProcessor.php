@@ -11,6 +11,7 @@ use App\PaymentTransaction\PaymentTransactionStatus;
 use App\Psp\PspResponse;
 use App\PspRouter\PspResolver;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -20,11 +21,14 @@ class PaymentProcessor
         private readonly EntityManagerInterface $em,
         private readonly PspResolver            $pspResolver,
         private readonly MessageBusInterface    $bus,
+        private readonly LoggerInterface        $logger,
     ) {
     }
 
     public function process(NewPaymentDto $dto): PspResponse
     {
+        $this->logger->debug(__METHOD__, [$dto]);
+
         $paymentTransaction = new PaymentTransaction();
         $paymentTransaction->setId(Uuid::v4());
         $paymentTransaction->setStatus(PaymentTransactionStatus::CREATED);
